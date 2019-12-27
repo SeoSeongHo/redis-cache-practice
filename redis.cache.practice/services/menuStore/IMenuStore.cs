@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace redis.cache.practice.services.crawler
+namespace redis.cache.practice.services.menuStore
 {
-    public interface IMenuCrawler
+    interface IMenuStore
     {
-        Task CrawlHtmlAsync();
     }
 }
