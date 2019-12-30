@@ -2,25 +2,18 @@
 using redis.cache.practice.models;
 using redis.cache.practice.services.redis;
 using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace redis.cache.practice.services.crawler
 {
     public class MenuCrawler : BaseCrawler
     {
-        public MenuCrawler(string url, RedisCache redisCache) : base (url, redisCache)
+        public MenuCrawler(string url) : base (url)
         {
 
         }
 
-        protected override async Task SetMenuCache(string htmlStr)
+        protected override async Task SetCacheAsync(string htmlStr)
         {
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(htmlStr);
@@ -51,7 +44,7 @@ namespace redis.cache.practice.services.crawler
 
         private async Task SetMenus(FoodMenu foodMenu)
         {
-            await redisCache.HashSet(foodMenu.restaurant, new [] { new HashEntry("breakfast", foodMenu.food.breakfast), new HashEntry("lunch", foodMenu.food.lunch), new HashEntry("dinner", foodMenu.food.dinner) });
+            await RedisCache.Init.HashSet(foodMenu.ToBreif(foodMenu.restaurant), new [] { new HashEntry("breakfast", foodMenu.food.breakfast), new HashEntry("lunch", foodMenu.food.lunch), new HashEntry("dinner", foodMenu.food.dinner) });
         }
     }
 }

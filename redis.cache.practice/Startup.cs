@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using redis.cache.practice.services.crawler;
+using redis.cache.practice.services.menuStore;
 
 namespace redis.cache.practice
 {
@@ -26,6 +21,12 @@ namespace redis.cache.practice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var triggerCrawler = new TriggerCrawler("http://snuco.snu.ac.kr/ko/foodmenu");
+            services.AddSingleton<ITriggerCrawler>(triggerCrawler);
+
+            var menuStore = new MenuStore(triggerCrawler);
+            services.AddSingleton<IMenuStore>(menuStore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

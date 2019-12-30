@@ -1,20 +1,33 @@
-﻿using redis.cache.practice.dao.redis;
-using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using StackExchange.Redis;
 using System.Threading.Tasks;
 
 namespace redis.cache.practice.services.redis
 {
-    public class RedisCache : IRedisCache
+    public class RedisCache
     {
-        private static IDatabase redisCache;
+        private static RedisCache instance;
+        private static readonly object padlock = new object();
+        private IDatabase redisCache;
 
         public RedisCache()
         {
-            var client = ConnectionMultiplexer.Connect("localhost");
+            var client = ConnectionMultiplexer.Connect("127.0.0.1:6379");
             redisCache = client.GetDatabase();
+        }
+
+        public static RedisCache Init
+        {
+            get
+            {
+                lock (padlock)
+                {
+                    if (instance == null)
+                        instance = new RedisCache();
+
+                    return instance;
+                }
+            }
+            
         }
 
         public async Task<string> Get(string key)

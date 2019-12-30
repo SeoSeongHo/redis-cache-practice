@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using redis.cache.practice.models;
 using System.Threading.Tasks;
 
 namespace redis.cache.practice.services.menuStore
 {
-    interface IMenuStore
+    public interface IMenuStore
     {
+        Task<FoodMenu> GetMenu(string restaurant);
     }
 }

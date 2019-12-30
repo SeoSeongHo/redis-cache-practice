@@ -1,49 +1,40 @@
-﻿using redis.cache.practice.dao.redis;
-using redis.cache.practice.models;
+﻿using redis.cache.practice.models;
+using redis.cache.practice.services.crawler;
 using redis.cache.practice.services.redis;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace redis.cache.practice.services.menuStore
 {
-    public class MenuStore
+    public class MenuStore : IMenuStore
     {
-        private IRedisCache redisCache;
+        private ITriggerCrawler triggerCrawler;
 
-        public MenuStore(IRedisCache redisCache)
+        public MenuStore(ITriggerCrawler triggerCrawler)
         {
-            this.redisCache = redisCache;
+            this.triggerCrawler = triggerCrawler;
         }
 
         public async Task<FoodMenu> GetMenu(string restaurant)
         {
-            var menus = await redisCache.HashGetAll(restaurant);
+            var menus = await RedisCache.Init.HashGetAll(restaurant);
 
-            if (menus.Count() == 0)
+            if (menus == null)
             {
-                // TODO 크롤링
+                await triggerCrawler.CrawlHtmlAsync(CrawlerType.menu);
+                menus = await RedisCache.Init.HashGetAll(restaurant);
             }
 
-            else
+            return new FoodMenu
             {
-                return new FoodMenu
+                restaurant = restaurant,
+                food = new Food
                 {
-                    restaurant = restaurant,
-                    food = new Food
-                    {
-                        breakfast = menus.FirstOrDefault(x => x.Name == "breakfast").ToString(),
-                        lunch = menus.FirstOrDefault(x => x.Name == "lunch").ToString(),
-                        dinner = menus.FirstOrDefault(x => x.Name == "dinner").ToString()
-                    }
-                };
-            }
-        }
-
-        public async Task<List<FoodMenu>> GetMenus()
-        {
-
+                    breakfast = menus.FirstOrDefault(x => x.Name == "breakfast").ToString(),
+                    lunch = menus.FirstOrDefault(x => x.Name == "lunch").ToString(),
+                    dinner = menus.FirstOrDefault(x => x.Name == "dinner").ToString()
+                }
+            };
         }
     }
 }

@@ -1,8 +1,5 @@
-﻿using redis.cache.practice.services.redis;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +8,11 @@ namespace redis.cache.practice.services.crawler
 {
     public abstract class BaseCrawler
     {
-        protected RedisCache redisCache;
         protected string url;
 
-        public BaseCrawler(string url, RedisCache redisCache)
+        public BaseCrawler(string url)
         {
             this.url = url;
-            this.redisCache = redisCache;
         }
 
         public async Task CrawlHtmlAsync()
@@ -37,7 +32,7 @@ namespace redis.cache.practice.services.crawler
                     htmlStr = sr.ReadToEnd();
                 }
 
-                await SetMenuCache(htmlStr);
+                await SetCacheAsync(htmlStr);
             }
             catch (Exception e)
             {
@@ -45,6 +40,6 @@ namespace redis.cache.practice.services.crawler
             }
         }
 
-        protected abstract Task SetMenuCache(string htmlStr);
+        protected abstract Task SetCacheAsync(string htmlStr);
     }
 }
