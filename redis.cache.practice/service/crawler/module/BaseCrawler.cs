@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -24,19 +25,24 @@ namespace redis.cache.practice.services.crawler
             {
                 var html = await httpClient.GetAsync(url);
                 string htmlStr;
+                var test = new List<string>();
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
                 using (var sr = new StreamReader(await html.Content.ReadAsStreamAsync(), Encoding.GetEncoding("UTF-8")))
                 {
                     htmlStr = sr.ReadToEnd();
+                    while (!sr.EndOfStream)
+                    {
+                        test.Add(sr.ReadLine());
+                    }
                 }
 
                 await SetCacheAsync(htmlStr);
             }
             catch (Exception e)
             {
-
+                Console.WriteLine(e.Message);
             }
         }
 

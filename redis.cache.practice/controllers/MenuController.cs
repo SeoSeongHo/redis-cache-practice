@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using redis.cache.practice.services.crawler;
 using redis.cache.practice.services.menuStore;
 
@@ -20,11 +21,10 @@ namespace redis.cache.practice.Controllers
             this.menuStore = menuStore;
         }
 
-        [HttpGet("{restaurant_id}")]
-        public async Task<IActionResult> GetMenu(string restaurant_id)
+        [HttpPost]
+        public async Task<IActionResult> GetMenu([FromBody] Dictionary<string, string> restaurant)
         {
-            var menu = await menuStore.GetMenu(restaurant_id);
-            return Ok();
+            return Json(new { data = await menuStore.GetMenu(restaurant["restaurant_id"]) } );
         }
     }
 }

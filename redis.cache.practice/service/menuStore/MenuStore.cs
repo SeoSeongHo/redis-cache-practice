@@ -15,19 +15,19 @@ namespace redis.cache.practice.services.menuStore
             this.triggerCrawler = triggerCrawler;
         }
 
-        public async Task<FoodMenu> GetMenu(string restaurant)
+        public async Task<FoodMenu> GetMenu(string restaurant_id)
         {
-            var menus = await RedisCache.Init.HashGetAll(restaurant);
-
+            await triggerCrawler.CrawlHtmlAsync(CrawlerType.menu);
+            var menus = await RedisCache.Instance.HashGetAll(restaurant_id);
             if (menus == null)
             {
                 await triggerCrawler.CrawlHtmlAsync(CrawlerType.menu);
-                menus = await RedisCache.Init.HashGetAll(restaurant);
+                menus = await RedisCache.Instance.HashGetAll(restaurant_id);
             }
 
             return new FoodMenu
             {
-                restaurant = restaurant,
+                restaurant = restaurant_id,
                 food = new Food
                 {
                     breakfast = menus.FirstOrDefault(x => x.Name == "breakfast").ToString(),

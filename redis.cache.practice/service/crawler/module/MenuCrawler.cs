@@ -44,7 +44,7 @@ namespace redis.cache.practice.services.crawler
 
         private async Task SetMenus(FoodMenu foodMenu)
         {
-            await RedisCache.Init.HashSet(foodMenu.ToBreif(foodMenu.restaurant), new [] { new HashEntry("breakfast", foodMenu.food.breakfast), new HashEntry("lunch", foodMenu.food.lunch), new HashEntry("dinner", foodMenu.food.dinner) });
+            await RedisCache.Instance.HashSet(foodMenu.ToBreif(foodMenu.restaurant), new [] { new HashEntry("breakfast", foodMenu.food.breakfast), new HashEntry("lunch", foodMenu.food.lunch), new HashEntry("dinner", foodMenu.food.dinner) });
         }
     }
 }

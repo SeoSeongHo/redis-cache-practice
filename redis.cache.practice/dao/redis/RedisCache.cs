@@ -1,30 +1,36 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Threading.Tasks;
 
 namespace redis.cache.practice.services.redis
 {
-    public class RedisCache
+    public sealed class RedisCache
     {
-        private static RedisCache instance;
+        private static RedisCache _instance = null;
         private static readonly object padlock = new object();
         private IDatabase redisCache;
 
         public RedisCache()
         {
-            var client = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+            var option = new ConfigurationOptions
+            {
+                AbortOnConnectFail = false,
+                EndPoints = { "localhost:6379" }
+            };
+            var client = ConnectionMultiplexer.Connect(option);
             redisCache = client.GetDatabase();
         }
 
-        public static RedisCache Init
+        public static RedisCache Instance
         {
             get
             {
                 lock (padlock)
                 {
-                    if (instance == null)
-                        instance = new RedisCache();
+                    if (_instance == null)
+                        _instance = new RedisCache();
 
-                    return instance;
+                    return _instance;
                 }
             }
             
@@ -52,7 +58,7 @@ namespace redis.cache.practice.services.redis
 
         public async Task HashSet(string key, HashEntry[] value)
         {
-            await redisCache.HashSetAsync(key, value);
+                await redisCache.HashSetAsync(key, value);
         }
     }
 }
